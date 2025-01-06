@@ -18,8 +18,6 @@ public class FarmaciaDAO implements IFarmaciaDAO {
     Scanner entrada = new Scanner(System.in);
 
 
-
-
     //FarmaciaDAO es una clase que implementa la interfaz IFarmaciaDAO,
     // lo que significa que proporciona la implementación concreta de los métodos definidos en la interfaz.
 
@@ -33,16 +31,16 @@ public class FarmaciaDAO implements IFarmaciaDAO {
         PreparedStatement ps; //Objeto de la clase ps, nos permite preparar la sentencia sql que ejecutaremos desde la base
         ResultSet rs; //recibimos la informacion de la consulta
         Connection conexion = Conexion.getConexion();//llamamos a la clase Conexion y utilizamos el metodo getConexion que nos devolvera la conexion de sql y se la asignamos a una variable de tipo Connection
-        String sql = "SELECT * FROM " + entidad + " ORDER BY "+ entidad +"_id";
-        try{
+        String sql = "SELECT * FROM " + entidad + " ORDER BY " + entidad + "_id";
+        try {
             ps = conexion.prepareStatement(sql); //con el objeto de conexion obtenemos la conexion, usamos el metodo prepareStament
             // , preparamos la sentencia y luego lo guardamos en el objeto ps para luego hacer uso del metodo executeQuery que ejecutara la sentencia.
             rs = ps.executeQuery();
-            while(rs.next()){ //metodo next se posiciona en el registro a iterarar
+            while (rs.next()) { //metodo next se posiciona en el registro a iterarar
 
                 Object objeto = null;
 
-                switch (entidad){
+                switch (entidad) {
                     case "farmaco":
                         Farmaco farmaco = new Farmaco();
                         farmaco.setFarmaco_id(rs.getInt("farmaco_id"));
@@ -72,13 +70,12 @@ public class FarmaciaDAO implements IFarmaciaDAO {
 
             }
         } catch (Exception e) {
-            System.out.println("Error al listar "+entidad+": " + e.getMessage());
-        }
-        finally {
-            try{
+            System.out.println("Error al listar " + entidad + ": " + e.getMessage());
+        } finally {
+            try {
                 conexion.close();
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("Error");
             }
         }
@@ -87,51 +84,14 @@ public class FarmaciaDAO implements IFarmaciaDAO {
     }
 
 
-
-
-    @Override
-    public Farmaco buscarFarmacoPorId(int farmacoId) {
-
-        Farmaco farmaco = new Farmaco();
-
-        PreparedStatement ps;
-        ResultSet rs;
-        Connection conexion = Conexion.getConexion();
-        var sql = "SELECT * FROM farmaco WHERE farmaco_id = ?";
-        try{
-            ps = conexion.prepareStatement(sql);
-            ps.setInt(1, farmacoId); //ingresamos el numero del farmaco a ?
-            rs = ps.executeQuery();
-            if(rs.next()){
-                farmaco.setNombre(rs.getString("nombre"));
-                farmaco.setDescripcion(rs.getString("descripcion"));
-                farmaco.setTipo(rs.getString("tipo"));
-                return farmaco;
-            }
-
-        }catch (Exception e){
-            System.out.println("Error al recuperar farmaco por id: "+ e.getMessage());
-        }
-        finally {
-            try{
-                conexion.close();
-            }catch (Exception e){
-                System.out.println("Error al cerrar conexion: "+ e.getMessage());
-
-            }
-        }
-
-        return farmaco;
-    }
-
     @Override
     public boolean insertar(Farmaco farmaco, Laboratorio laboratorio, String entidad) {
         PreparedStatement ps;
         Connection conexion = Conexion.getConexion();
-        switch (entidad){
+        switch (entidad) {
             case "farmaco":
                 String sql = "INSERT INTO farmaco(nombre, descripcion, tipo)" + " VALUES(?, ?, ?)";
-                try{
+                try {
                     ps = conexion.prepareStatement(sql);
                     ps.setString(1, farmaco.getNombre());
                     ps.setString(2, farmaco.getDescripcion());
@@ -142,7 +102,7 @@ public class FarmaciaDAO implements IFarmaciaDAO {
                 } catch (Exception e) {
                     System.out.println("Error al agregar cliente: " + e.getMessage());
                 } finally {
-                    try{
+                    try {
                         conexion.close();
                     } catch (Exception e) {
                         System.out.println("Error al cerrar conexion: " + e.getMessage());
@@ -152,7 +112,7 @@ public class FarmaciaDAO implements IFarmaciaDAO {
 
                 sql = "INSERT INTO laboratorio(nombre, direccion, telefono, email, nacionalidad_id, provincia_id, ciudad_id)" + " VALUES(?, ?, ?, ?, ?, ?, ?)";
 
-                try{
+                try {
 
 
                     ps = conexion.prepareStatement(sql);
@@ -170,7 +130,7 @@ public class FarmaciaDAO implements IFarmaciaDAO {
                 } catch (Exception e) {
                     System.out.println("Error al insertar: " + e.getMessage());
                 } finally {
-                    try{
+                    try {
                         conexion.close();
                     } catch (Exception e) {
                         System.out.println("Error al cerrar conexion: " + e.getMessage());
@@ -183,101 +143,200 @@ public class FarmaciaDAO implements IFarmaciaDAO {
     }
 
     @Override
-    public boolean modificarFarmaco(Farmaco farmaco, boolean buscarPorId, String input) {
+    public boolean modificarFarmaco(Farmaco farmaco, Laboratorio laboratorio, boolean buscarPorId, String input, String entidad) {
         PreparedStatement ps = null;
         Connection conexion = Conexion.getConexion();
         String sql;
 
-        if (buscarPorId) {
-            sql = "UPDATE farmaco SET nombre=?, descripcion=?, tipo=? WHERE farmaco_id=?";
-        } else {
-            sql = "UPDATE farmaco SET nombre=?, descripcion=?, tipo=? WHERE nombre=?";
+        switch (entidad) {
+            case "farmaco":
+
+
+                if (buscarPorId) {
+                    sql = "UPDATE farmaco SET nombre=?, descripcion=?, tipo=? WHERE farmaco_id=?";
+                } else {
+                    sql = "UPDATE farmaco SET nombre=?, descripcion=?, tipo=? WHERE nombre=?";
+                }
+
+                try {
+                    ps = conexion.prepareStatement(sql);
+                    ps.setString(1, farmaco.getNombre());
+                    ps.setString(2, farmaco.getDescripcion());
+                    ps.setString(3, farmaco.getTipo());
+
+                    if (buscarPorId) {
+                        ps.setInt(4, farmaco.getFarmaco_id());
+                    } else {
+                        ps.setString(4, input);
+                    }
+
+                    System.out.println("SQL Query: " + sql);
+                    System.out.println("Datos a modificar:");
+                    System.out.println("Nombre: " + farmaco.getNombre());
+                    System.out.println("Descripcion: " + farmaco.getDescripcion());
+                    System.out.println("Tipo: " + farmaco.getTipo());
+                    if (buscarPorId) {
+                        System.out.println("ID: " + farmaco.getFarmaco_id());
+                    } else {
+                        System.out.println("Nombre para búsqueda: " + input);
+                    }
+
+                    int filasAfectadas = ps.executeUpdate();
+                    if (filasAfectadas > 0) {
+                        return true;
+                    } else {
+                        System.out.println("No se encontró ningún registro para actualizar.");
+                    }
+
+                } catch (Exception e) {
+                    System.out.println("Error al modificar farmaco: " + e.getMessage());
+                } finally {
+                    try {
+                        if (ps != null) ps.close();
+                        if (conexion != null && !conexion.isClosed()) conexion.close();
+                    } catch (Exception e) {
+                        System.out.println("Error al cerrar recursos: " + e.getMessage());
+                    }
+                }
+
+            case "laboratorio":
+
+                sql = "UPDATE laboratorio SET nombre=?, direccion=?, telefono=?, email=?, nacionalidad_id=?, provincia_id=?, ciudad_id=? WHERE laboratorio_id=?";
+
+                try {
+                    ps = conexion.prepareStatement(sql);
+                    ps.setString(1, laboratorio.getNombre());
+                    ps.setString(2, laboratorio.getDireccion());
+                    ps.setString(3, laboratorio.getTelefono());
+                    ps.setString(4, laboratorio.getEmail());
+                    ps.setInt(5, obtenerUbicacion("nacionalidad_id", "nacionalidad", laboratorio.getNacionalidad(), laboratorio));
+                    ps.setInt(6, obtenerUbicacion("provincia_id", "provincia", laboratorio.getProvincia(), laboratorio));
+                    ps.setInt(7, obtenerUbicacion("ciudad_id", "ciudad", laboratorio.getCiudad(), laboratorio));
+                    ps.setInt(8, laboratorio.getLaboratorio_id());
+
+                    System.out.println("SQL Query: " + sql);
+                    System.out.println("Datos a modificar:");
+                    System.out.println("Nombre: " + laboratorio.getNombre());
+                    System.out.println("direccion: " + laboratorio.getDireccion());
+                    System.out.println("telefono: " + laboratorio.getTelefono());
+                    System.out.println("email: " + laboratorio.getEmail());
+                    System.out.println("nacionalidad_id: " + obtenerUbicacion("nacionalidad_id", "nacionalidad", laboratorio.getNacionalidad(), laboratorio));
+                    System.out.println("provincia_id: " + obtenerUbicacion("provincia_id", "provincia", laboratorio.getProvincia(), laboratorio));
+                    System.out.println("ciudad_id: " + obtenerUbicacion("ciudad_id", "ciudad", laboratorio.getCiudad(), laboratorio));
+
+
+                    int filasAfectadas = ps.executeUpdate();
+                    if (filasAfectadas > 0) {
+                        return true;
+                    } else {
+                        System.out.println("No se encontró ningún registro para actualizar.");
+                    }
+
+                } catch (Exception e) {
+                    System.out.println("Error al modificar farmaco: " + e.getMessage());
+                } finally {
+                    try {
+                        if (ps != null) ps.close();
+                        if (conexion != null && !conexion.isClosed()) conexion.close();
+                    } catch (Exception e) {
+                        System.out.println("Error al cerrar recursos: " + e.getMessage());
+                    }
+                }
         }
 
-        try {
-            ps = conexion.prepareStatement(sql);
-            ps.setString(1, farmaco.getNombre());
-            ps.setString(2, farmaco.getDescripcion());
-            ps.setString(3, farmaco.getTipo());
-
-            if (buscarPorId) {
-                ps.setInt(4, farmaco.getFarmaco_id());
-            } else {
-                ps.setString(4, input);
-            }
-
-            System.out.println("SQL Query: " + sql);
-            System.out.println("Datos a modificar:");
-            System.out.println("Nombre: " + farmaco.getNombre());
-            System.out.println("Descripcion: " + farmaco.getDescripcion());
-            System.out.println("Tipo: " + farmaco.getTipo());
-            if (buscarPorId) {
-                System.out.println("ID: " + farmaco.getFarmaco_id());
-            } else {
-                System.out.println("Nombre para búsqueda: " + input);
-            }
-
-            int filasAfectadas = ps.executeUpdate();
-            if (filasAfectadas > 0) {
-                return true;
-            } else {
-                System.out.println("No se encontró ningún registro para actualizar.");
-            }
-
-        } catch (Exception e) {
-            System.out.println("Error al modificar farmaco: " + e.getMessage());
-        } finally {
-            try {
-                if (ps != null) ps.close();
-                if (conexion != null && !conexion.isClosed()) conexion.close();
-            } catch (Exception e) {
-                System.out.println("Error al cerrar recursos: " + e.getMessage());
-            }
-        }
 
         return false;
     }
 
     @Override
-    public boolean eliminarFarmaco(Farmaco farmaco) {
+    public boolean eliminar(Farmaco farmaco, Laboratorio laboratorio, int id, String entidad) {
 
-        PreparedStatement ps = null;
-        Connection conexion = Conexion.getConexion();
-        String sql = "DELETE FROM farmaco WHERE farmaco_id = ?";
-        System.out.println("SQL Query: " + sql);
+        switch (entidad) {
+            case "farmaco":
+                PreparedStatement ps = null;
+                Connection conexion = Conexion.getConexion();
+                String sql = "DELETE FROM farmaco WHERE farmaco_id = ?";
+                System.out.println("SQL Query: " + sql);
 
-        System.out.println("Datos a modificar:");
-        System.out.println("Nombre: " + farmaco.getNombre());
-        System.out.println("Descripcion: " + farmaco.getDescripcion());
-        System.out.println("Tipo: " + farmaco.getTipo());
-        System.out.println("ID: " + farmaco.getFarmaco_id());
-        System.out.println("Presiona 1 para confirmar la eliminacion: ");
-        int confirmacion = entrada.nextInt();
+                System.out.println("Datos a eliminar:");
+                System.out.println("Nombre: " + farmaco.getNombre());
+                System.out.println("Descripcion: " + farmaco.getDescripcion());
+                System.out.println("Tipo: " + farmaco.getTipo());
+                System.out.println("ID: " + farmaco.getFarmaco_id());
+                System.out.println("Presiona 1 para confirmar la eliminacion: ");
+                int confirmacion = entrada.nextInt();
 
-        if(confirmacion == 1){
-            try{
-                ps = conexion.prepareStatement(sql);
-                ps.setInt(1, farmaco.getFarmaco_id());
-                ps.execute();
-                return true;
-            }catch (Exception e){
-                System.out.println("Error al eliminar farmaco: " + e.getMessage());
-            } finally {
-                try {
-                    if (ps != null) ps.close();
-                    if (conexion != null && !conexion.isClosed()) conexion.close();
-                } catch (Exception e) {
-                    System.out.println("Error al cerrar recursos: " + e.getMessage());
+                if (confirmacion == 1) {
+                    try {
+                        ps = conexion.prepareStatement(sql);
+                        ps.setInt(1, id);
+                        int filasAfectadas = ps.executeUpdate();
+                        if (filasAfectadas > 0) {
+                            return true; // Se eliminó correctamente
+                        } else {
+                            System.out.println("No se encontró el laboratorio con ID: " + id);
+                        }
+
+                    } catch (Exception e) {
+                        System.out.println("Error al eliminar farmaco: " + e.getMessage());
+                    } finally {
+                        try {
+                            if (ps != null) ps.close();
+                            if (conexion != null && !conexion.isClosed()) conexion.close();
+                        } catch (Exception e) {
+                            System.out.println("Error al cerrar recursos: " + e.getMessage());
+                        }
+                    }
+                } else {
+                    System.out.println("Opcion incorrecta");
+
                 }
-            }
-        }else {
-            System.out.println("Opcion incorrecta");
+                return false;
+            case "laboratorio":
+
+                ps = null;
+                conexion = Conexion.getConexion();
+                sql = "DELETE FROM laboratorio WHERE laboratorio_id = ?";
+                System.out.println("SQL Query: " + sql);
+
+                System.out.println("Datos a elimanar:");
+                System.out.println("laboratorio_id: " + laboratorio.getLaboratorio_id());
+                System.out.println("Nombre: " + laboratorio.getNombre());
+                System.out.println("direccion: " + laboratorio.getDireccion());
+                System.out.println("telefono: " + laboratorio.getTelefono());
+                System.out.println("email: " + laboratorio.getEmail());
+
+                System.out.println("Presiona 1 para confirmar la eliminacion: ");
+                confirmacion = entrada.nextInt();
+
+                if (confirmacion == 1) {
+                    try {
+                        ps = conexion.prepareStatement(sql);
+                        ps.setInt(1, id);
+                        ps.executeUpdate();
+                        return true;
+                    } catch (Exception e) {
+                        System.out.println("Error al eliminar farmaco: " + e.getMessage());
+                    } finally {
+                        try {
+                            if (ps != null) ps.close();
+                            if (conexion != null && !conexion.isClosed()) conexion.close();
+                        } catch (Exception e) {
+                            System.out.println("Error al cerrar recursos: " + e.getMessage());
+                        }
+                    }
+                } else {
+                    System.out.println("Opcion incorrecta");
+
+                }
+                return false;
+
 
         }
 
         return false;
-
     }
+
 
 
 
@@ -298,12 +357,12 @@ public class FarmaciaDAO implements IFarmaciaDAO {
 
     }
 
-    public Laboratorio validacionLaboratorio() {
+    public Laboratorio validacionLaboratorio(Integer id) {
 
 
         Scanner entrada = new Scanner(System.in);
 
-        System.out.println("Ingrese el nombre del nuevo laboratorio a agregar: ");
+        System.out.println("Ingrese el nombre del laboratorio a agregar/modificar: ");
         String nombre = entrada.nextLine();
         System.out.println("Ingrese direccion: ");
         String direccion = entrada.nextLine();
@@ -317,9 +376,11 @@ public class FarmaciaDAO implements IFarmaciaDAO {
         String provincia = entrada.nextLine();
         System.out.println("Ingrese ciudad:");
         String ciudad = entrada.nextLine();
-
-        Laboratorio nuevoLaboratorio = new Laboratorio(nombre, direccion, telefono, email, nacionalidad, provincia, ciudad);
-        return nuevoLaboratorio;
+        if (id == null) {
+            return new Laboratorio(nombre, direccion, telefono, email, nacionalidad, provincia, ciudad);
+        } else {
+            return new Laboratorio(id, nombre, direccion, telefono, email, nacionalidad, provincia, ciudad);
+        }
 
     }
 
@@ -327,7 +388,7 @@ public class FarmaciaDAO implements IFarmaciaDAO {
 
         Scanner entrada = new Scanner(System.in);
 
-        System.out.println("Ingrese el nombre del nuevo farmaco a agregar: ");
+        System.out.println("Ingrese el nombre del farmaco a agregar/modificar: ");
         String nombre = entrada.nextLine();
         System.out.println("Ingrese descripcion: ");
         String descripcion = entrada.nextLine();

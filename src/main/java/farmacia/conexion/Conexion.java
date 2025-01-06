@@ -1,5 +1,7 @@
 package farmacia.conexion;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -11,13 +13,11 @@ public class Conexion {
 
         Connection conexion = null;
 
-        var baseDatos = "farmacia_dt";
+        Dotenv dotenv = Dotenv.load();
 
-        var url = "jdbc:mysql://localhost:3306/" + baseDatos;
-
-        var usuario = "root";
-
-        var password = "Kerosene472nafta";
+        String url = dotenv.get("DB_URL");
+        String usuario = dotenv.get("DB_USER");
+        String password = dotenv.get("DB_PASSWORD");
 
         try{
             Class.forName("com.mysql.cj.jdbc.Driver"); //clase de conexion a la base de datos

@@ -7,28 +7,6 @@ public class Laboratorio {
     private String direccion;
     private String telefono;
     private String email;
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Laboratorio{");
-        sb.append("laboratorio_id=").append(laboratorio_id);
-        sb.append(", nombre='").append(nombre).append('\'');
-        sb.append(", direccion='").append(direccion).append('\'');
-        sb.append(", telefono='").append(telefono).append('\'');
-        sb.append(", email='").append(email).append('\'');
-        sb.append(", nacionalidad1=").append(nacionalidad1);
-        sb.append(", nacionalidad_id=").append(nacionalidad_id);
-        sb.append(", provincia1=").append(provincia1);
-        sb.append(", provincia_id=").append(provincia_id);
-        sb.append(", ciudad1=").append(ciudad1);
-        sb.append(", ciudad_id=").append(ciudad_id);
-        sb.append(", nacionalidad='").append(nacionalidad).append('\'');
-        sb.append(", provincia='").append(provincia).append('\'');
-        sb.append(", ciudad='").append(ciudad).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
-
     private Nacionalidad nacionalidad1;
     private int nacionalidad_id;
     private Provincia provincia1;
@@ -39,9 +17,43 @@ public class Laboratorio {
     private String provincia;
     private String ciudad;
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Laboratorio{");
+        sb.append("laboratorio_id=").append(laboratorio_id);
+        sb.append(", nombre='").append(nombre).append('\'');
+        sb.append(", direccion='").append(direccion).append('\'');
+        sb.append(", telefono='").append(telefono).append('\'');
+        sb.append(", email='").append(email).append('\'');
+
+        sb.append(", nacionalidad_id=").append(nacionalidad_id);
+
+        sb.append(", provincia_id=").append(provincia_id);
+
+        sb.append(", ciudad_id=").append(ciudad_id);
+
+        sb.append('}');
+        return sb.toString();
+    }
+
+
+
 
     public Laboratorio(String nombre, String direccion, String telefono, String email, String nacionalidad, String provincia, String ciudad) {
 
+        this.nombre = nombre;
+        this.direccion = direccion;
+        this.telefono = telefono;
+        this.email = email;
+        this.nacionalidad = nacionalidad;
+        this.provincia = provincia;
+        this.ciudad = ciudad;
+
+
+    }
+
+    public Laboratorio(int id, String nombre, String direccion, String telefono, String email, String nacionalidad, String provincia, String ciudad) {
+        this.laboratorio_id = id;
         this.nombre = nombre;
         this.direccion = direccion;
         this.telefono = telefono;

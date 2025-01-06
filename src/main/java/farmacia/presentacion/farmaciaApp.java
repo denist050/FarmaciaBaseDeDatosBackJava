@@ -179,7 +179,7 @@ public class farmaciaApp {
                             System.out.println("No se agrego el farmaco: " + nuevoFarmaco.getNombre());
                         break;
                     case "laboratorio":
-                        Laboratorio nuevoLaboratorio = farmaciaDAO.validacionLaboratorio();
+                        Laboratorio nuevoLaboratorio = farmaciaDAO.validacionLaboratorio(null);
                         agregado = farmaciaDAO.insertar(null, nuevoLaboratorio,  entidad);
 
                         if (agregado)
@@ -189,70 +189,140 @@ public class farmaciaApp {
                         break;
                 }break;
 
-            /*
+
             case 4:
 
-                //Modificar un Farmaco
-                System.out.println("Ingrese el nombre del farmaco o id a modificar: ");
-                String input = entrada.nextLine();
 
+                switch (entidad){
 
-                try {
-                    int id = Integer.parseInt(input);//busca por id
-                    for (Farmaco f : listar) { //version resumida -> for(Farmaco f : listar)
-                        if (f.getFarmaco_id() == id) {
-                            System.out.println("Farmaco encontrado: " + f.getNombre());
-                            Farmaco modificarFarmaco = farmaciaDAO.validacionPorId(id);
-                            if (farmaciaDAO.modificarFarmaco(modificarFarmaco, true, null)) {
-                                System.out.println("Farmaco Modificado exitosamente");
-                            } else {
-                                System.out.println("No se pudo modificar farmaco");
+                    case "farmaco":
+
+                        System.out.println("Ingrese el id o nombre del farmaco a modificar: ");
+                        String input = entrada.nextLine();
+
+                        try {
+                            int id = Integer.parseInt(input);//busca por id
+                            for (Object obj : listar) { //version resumida -> for(Farmaco f : listar)
+                                if(obj instanceof Farmaco) {
+                                    Farmaco f = (Farmaco) obj;
+                                    if (f.getFarmaco_id() == id) {
+                                        System.out.println("Farmaco encontrado: " + f.getNombre());
+                                        Farmaco modificarFarmaco = farmaciaDAO.validacionPorId(id);
+                                        if (farmaciaDAO.modificarFarmaco(modificarFarmaco, null, true, null, entidad)) {
+                                            System.out.println("Farmaco Modificado exitosamente");
+                                        } else {
+                                            System.out.println("No se pudo modificar farmaco");
+                                        }
+                                        break;
+                                    }
+                                }
                             }
-                            break;
-                        }
-                    }
+                        } catch (NumberFormatException e) {
 
-                } catch (NumberFormatException e) {
-
-                    for (Farmaco f : listar) {//busca por nombre
-                        if (f.getNombre().equalsIgnoreCase(input)) {
-                            System.out.println("Farmaco encontrado: " + f.getNombre() + " Farmaco id: " + f.getFarmaco_id());
-                            Farmaco modificarFarmaco = farmaciaDAO.validacion();
-                            if (farmaciaDAO.modificarFarmaco(modificarFarmaco, false, input)) {
-                                System.out.println("Farmaco Modificado exitosamente");
-                            } else {
-                                System.out.println("No se pudo modificar farmaco");
+                            for (Object obj : listar) { //version resumida -> for(Farmaco f : listar)
+                                if(obj instanceof Farmaco) {
+                                    Farmaco f = (Farmaco) obj;
+                                    if (f.getNombre().equalsIgnoreCase(input)) {
+                                        System.out.println("Farmaco encontrado: " + f.getNombre() + " Farmaco id: " + f.getFarmaco_id());
+                                        Farmaco modificarFarmaco = farmaciaDAO.validacionFarmaco();
+                                        if (farmaciaDAO.modificarFarmaco(modificarFarmaco, null, false, input, entidad)) {
+                                            System.out.println("Farmaco Modificado exitosamente");
+                                        } else {
+                                            System.out.println("No se pudo modificar farmaco");
+                                        }
+                                        break;
+                                    }
+                                }
                             }
-                            break;
+                        }break;
+
+
+                    case "laboratorio":
+
+                        System.out.println("Ingrese el id del laboratorio a modificar: ");
+                        input = entrada.nextLine();
+
+                        int id = Integer.parseInt(input);//busca por id
+                            for (Object obj : listar) { //version resumida -> for(Farmaco f : listar)
+                                if(obj instanceof Laboratorio) {
+                                    Laboratorio l = (Laboratorio) obj;
+                                if (l.getLaboratorio_id() == id) {
+                                    Laboratorio modificarLaboratorio = farmaciaDAO.validacionLaboratorio(id);
+                                    boolean agregado = farmaciaDAO.modificarFarmaco(null, modificarLaboratorio, false, null, entidad);
+
+                                    if (agregado)
+                                        System.out.println("Laboratorio agregado: \n" + "Nombre: " + modificarLaboratorio.getNombre() + "\nLaboratorio ID: " + modificarLaboratorio.getLaboratorio_id());
+                                    else
+                                        System.out.println("No se agrego el laboratorio: " + modificarLaboratorio);
+                                    break;
+                                }
+                            }
                         }
-                    }
-                }
-                break;
+                }break;
+
+
             case 5:
 
-                System.out.println("Ingrese el id del farmaco a eliminar: ");
-                try {
-                    int farmacoEliminarId = entrada.nextInt();
-                    boolean encontrado = false;
+                switch (entidad){
+                    case "farmaco":
+                        try {
 
-                    for (Farmaco f : listar) {
-                        if (f.getFarmaco_id() == farmacoEliminarId) {
-                            farmaciaDAO.eliminarFarmaco(f);
-                            System.out.println("Farmaco eliminado con exito.");
-                            encontrado = true;
-                            break;
+                            System.out.println("Ingrese el id del farmaco a eliminar: ");
+                            Integer farmacoEliminarId = entrada.nextInt();
+                            boolean encontrado = false;
+
+                            for (Object obj : listar) {
+                                if(obj instanceof Farmaco) {
+                                    Farmaco f = (Farmaco) obj;
+                                    if (f.getFarmaco_id() == farmacoEliminarId) {
+                                        farmaciaDAO.eliminar(f, null, farmacoEliminarId, entidad);
+                                        System.out.println("Farmaco eliminado con exito.");
+                                        encontrado = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!encontrado) {
+                                System.out.println("El farmaco no se encuentra.");
+                            }
+                        } catch (InputMismatchException e) {
+                            System.out.println("Entrada no valida. Por favor, ingrese un numero.");
+                            entrada.nextLine();
+                        } catch (Exception e) {
+                            System.out.println("Ocurrio un error esperado: " + e.getMessage());
                         }
-                    }
-                    if (!encontrado) {
-                        System.out.println("El farmaco no se encuentra.");
-                    }
-                } catch (InputMismatchException e) {
-                    System.out.println("Entrada no valida. Por favor, ingrese un numero.");
-                    entrada.nextLine();
-                } catch (Exception e) {
-                    System.out.println("Ocurrio un error esperado: " + e.getMessage());
+                        break;
+                    case "laboratorio":
+                        try {
+
+                            System.out.println("Ingrese el id del laboratorio a eliminar: ");
+                            int laboratorioEliminarId = entrada.nextInt();
+                            boolean encontrado = false;
+
+                            for (Object obj : listar) {
+                                if(obj instanceof Laboratorio) {
+                                    Laboratorio l = (Laboratorio) obj;
+                                    if (l.getLaboratorio_id() == laboratorioEliminarId) {
+                                        farmaciaDAO.eliminar(null, l, laboratorioEliminarId, entidad);
+                                        System.out.println("Laboratorio eliminado con exito.");
+                                        encontrado = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!encontrado) {
+                                System.out.println("El Laboratorio no se encuentra.");
+                            }
+                        } catch (InputMismatchException e) {
+                            System.out.println("Entrada no valida. Por favor, ingrese un numero.");
+                            entrada.nextLine();
+                        } catch (Exception e) {
+                            System.out.println("Ocurrio un error esperado: " + e.getMessage());
+                        }
+                        break;
                 }
-                break;*/
+
+
             case 6:
                 System.out.println("Cerrando programa... ");
                 return true;

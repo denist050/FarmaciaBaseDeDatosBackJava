@@ -12,12 +12,11 @@ import java.util.List;
 public interface IFarmaciaDAO{
 
     <Entidad> List<Entidad> listarEntidad(String entidad);
-    Farmaco buscarFarmacoPorId(int farmacoId);
     public boolean insertar(Farmaco farmaco, Laboratorio laboratorio, String entidad);
-    boolean modificarFarmaco(Farmaco farmaco, boolean buscarPorId,String input);
-    boolean eliminarFarmaco(Farmaco farmaco_id);
+    boolean modificarFarmaco(Farmaco farmaco, Laboratorio laboratorio, boolean buscarPorId,String input, String entidad);
+    boolean eliminar(Farmaco farmaco, Laboratorio laboratorio, int id, String entidad);
     Farmaco validacionFarmaco();
-    Laboratorio validacionLaboratorio();
+    Laboratorio validacionLaboratorio(Integer id);
     Farmaco validacionPorId(int id);
 
 
