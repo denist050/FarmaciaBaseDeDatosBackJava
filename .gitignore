@@ -36,3 +36,16 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Ignorar archivos de configuración de entorno  
+.env  
+
+# Ignorar directorios de compilación  
+target/  
+*.class  
+
+# Ignorar el archivo de log de Maven  
+*.log  
+
+# Ignorar archivos de sistema de Mac  
+.DS_Store  
