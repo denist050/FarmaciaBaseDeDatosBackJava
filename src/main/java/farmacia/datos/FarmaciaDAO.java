@@ -96,8 +96,16 @@ public class FarmaciaDAO implements IFarmaciaDAO {
                     ps.setString(1, farmaco.getNombre());
                     ps.setString(2, farmaco.getDescripcion());
                     ps.setString(3, farmaco.getTipo());
-                    ps.execute();
-                    return true;
+
+                    //ejecutamos la insercion
+                    int filasAfectadas = ps.executeUpdate();
+
+                    if (filasAfectadas > 0){
+                        farmaco.setFarmaco_id(obtenerUltimoIdGenerado(conexion));
+                        return true;
+                    }else {
+                        return false;
+                    }
 
                 } catch (Exception e) {
                     System.out.println("Error al agregar cliente: " + e.getMessage());
@@ -124,8 +132,14 @@ public class FarmaciaDAO implements IFarmaciaDAO {
                     ps.setInt(6, obtenerUbicacion("provincia_id", "provincia", laboratorio.getProvincia(), laboratorio));
                     ps.setInt(7, obtenerUbicacion("ciudad_id", "ciudad", laboratorio.getCiudad(), laboratorio));
 
-                    ps.execute();
-                    return true;
+                    int filasAfectadas = ps.executeUpdate();
+
+                    if(filasAfectadas > 0){
+                        laboratorio.setLaboratorio_id(obtenerUltimoIdGenerado(conexion));
+                        return true;
+                    }else {
+                        return false;
+                    }
 
                 } catch (Exception e) {
                     System.out.println("Error al insertar: " + e.getMessage());
@@ -437,6 +451,30 @@ public class FarmaciaDAO implements IFarmaciaDAO {
             throw new RuntimeException(e);
         }
 
+    }
 
+    public int obtenerUltimoIdGenerado(Connection conexion) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT LAST_INSERT_ID()";
+            ps = conexion.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);  // Devuelve el último ID generado
+            } else {
+                throw new IllegalArgumentException("No se encontró el último ID generado.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener el último ID generado: " + e.getMessage(), e);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            } catch (Exception e) {
+                System.out.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
     }
 }

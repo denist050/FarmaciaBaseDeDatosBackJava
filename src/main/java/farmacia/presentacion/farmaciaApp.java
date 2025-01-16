@@ -1,10 +1,13 @@
 package farmacia.presentacion;
 
+import farmacia.conexion.Conexion;
 import farmacia.datos.FarmaciaDAO;
 import farmacia.datos.IFarmaciaDAO;
 import farmacia.dominio.Farmaco;
 import farmacia.dominio.Laboratorio;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -16,6 +19,7 @@ public class farmaciaApp {
     public static void main(String[] args) {
         farmaciaApp();
     }
+
 
     private static void farmaciaApp(){
 
@@ -168,6 +172,8 @@ public class farmaciaApp {
             case 3:
 
                 switch (entidad){
+
+
                     case "farmaco":
 
                         Farmaco nuevoFarmaco = farmaciaDAO.validacionFarmaco();
@@ -320,7 +326,7 @@ public class farmaciaApp {
                             System.out.println("Ocurrio un error esperado: " + e.getMessage());
                         }
                         break;
-                }
+                }break;
 
 
             case 6:
